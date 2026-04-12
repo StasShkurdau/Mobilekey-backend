@@ -1,8 +1,9 @@
-package com.mobilekey.backend.controller
+package com.mobilekey.backend.auth.controller
 
-import com.mobilekey.backend.dto.*
-import com.mobilekey.backend.service.AuthService
-import com.mobilekey.backend.service.PasswordResetService
+import com.mobilekey.backend.auth.dto.*
+import com.mobilekey.backend.auth.service.AuthService
+import com.mobilekey.backend.auth.service.PasswordResetService
+import com.mobilekey.backend.common.dto.MessageResponse
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*

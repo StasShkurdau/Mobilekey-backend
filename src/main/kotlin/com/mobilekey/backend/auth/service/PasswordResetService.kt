@@ -1,7 +1,7 @@
-package com.mobilekey.backend.service
+package com.mobilekey.backend.auth.service
 
-import com.mobilekey.backend.config.PasswordResetProperties
-import com.mobilekey.backend.repository.UserRepository
+import com.mobilekey.backend.auth.config.PasswordResetProperties
+import com.mobilekey.backend.user.repository.UserRepository
 import org.springframework.data.redis.core.StringRedisTemplate
 import org.springframework.mail.SimpleMailMessage
 import org.springframework.mail.javamail.JavaMailSender

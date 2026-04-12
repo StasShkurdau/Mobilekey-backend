@@ -1,5 +1,7 @@
-package com.mobilekey.backend.config
+package com.mobilekey.backend.common.config
 
+import com.mobilekey.backend.auth.config.JwtProperties
+import com.mobilekey.backend.auth.config.PasswordResetProperties
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration

@@ -1,6 +1,6 @@
-package com.mobilekey.backend.security
+package com.mobilekey.backend.auth.security
 
-import com.mobilekey.backend.config.JwtProperties
+import com.mobilekey.backend.auth.config.JwtProperties
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.security.Keys

@@ -1,4 +1,4 @@
-package com.mobilekey.backend.config
+package com.mobilekey.backend.auth.config
 
 import org.springframework.boot.context.properties.ConfigurationProperties
 

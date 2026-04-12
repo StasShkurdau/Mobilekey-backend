@@ -1,4 +1,4 @@
-package com.mobilekey.backend.dto
+package com.mobilekey.backend.user.dto
 
 import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.Size

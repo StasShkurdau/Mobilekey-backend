@@ -1,6 +1,6 @@
-package com.mobilekey.backend.config
+package com.mobilekey.backend.auth.config
 
-import com.mobilekey.backend.security.JwtAuthFilter
+import com.mobilekey.backend.auth.security.JwtAuthFilter
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.web.builders.HttpSecurity

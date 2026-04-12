@@ -1,6 +1,6 @@
-package com.mobilekey.backend.repository
+package com.mobilekey.backend.user.repository
 
-import com.mobilekey.backend.entity.User
+import com.mobilekey.backend.user.entity.User
 import org.jooq.DSLContext
 import org.jooq.Record
 import org.jooq.impl.DSL.field

@@ -1,9 +1,9 @@
-package com.mobilekey.backend.service
+package com.mobilekey.backend.user.service
 
-import com.mobilekey.backend.dto.UpdateUserRequest
-import com.mobilekey.backend.dto.UserResponse
-import com.mobilekey.backend.entity.User
-import com.mobilekey.backend.repository.UserRepository
+import com.mobilekey.backend.user.dto.UpdateUserRequest
+import com.mobilekey.backend.user.dto.UserResponse
+import com.mobilekey.backend.user.entity.User
+import com.mobilekey.backend.user.repository.UserRepository
 import org.springframework.stereotype.Service
 import java.util.UUID
 

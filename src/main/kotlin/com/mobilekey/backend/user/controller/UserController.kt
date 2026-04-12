@@ -1,8 +1,8 @@
-package com.mobilekey.backend.controller
+package com.mobilekey.backend.user.controller
 
-import com.mobilekey.backend.dto.UpdateUserRequest
-import com.mobilekey.backend.dto.UserResponse
-import com.mobilekey.backend.service.UserService
+import com.mobilekey.backend.user.dto.UpdateUserRequest
+import com.mobilekey.backend.user.dto.UserResponse
+import com.mobilekey.backend.user.service.UserService
 import jakarta.validation.Valid
 import org.springframework.web.bind.annotation.*
 import java.security.Principal

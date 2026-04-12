@@ -1,4 +1,4 @@
-package com.mobilekey.backend.entity
+package com.mobilekey.backend.user.entity
 
 import java.util.UUID
 

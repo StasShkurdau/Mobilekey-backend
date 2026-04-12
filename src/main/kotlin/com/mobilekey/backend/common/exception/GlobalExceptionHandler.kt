@@ -1,6 +1,6 @@
-package com.mobilekey.backend.controller
+package com.mobilekey.backend.common.exception
 
-import com.mobilekey.backend.dto.MessageResponse
+import com.mobilekey.backend.common.dto.MessageResponse
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.MethodArgumentNotValidException

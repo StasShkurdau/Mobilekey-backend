@@ -1,4 +1,4 @@
-package com.mobilekey.backend.security
+package com.mobilekey.backend.auth.security
 
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest

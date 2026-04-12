@@ -1,12 +1,13 @@
-package com.mobilekey.backend.service
+package com.mobilekey.backend.auth.service
 
-import com.mobilekey.backend.dto.LoginRequest
-import com.mobilekey.backend.dto.RegisterRequest
-import com.mobilekey.backend.dto.TokenResponse
-import com.mobilekey.backend.entity.User
-import com.mobilekey.backend.repository.UserRepository
-import com.mobilekey.backend.security.JwtService
-import com.mobilekey.backend.security.RefreshTokenService
+import com.mobilekey.backend.auth.dto.LoginRequest
+import com.mobilekey.backend.auth.dto.RegisterRequest
+import com.mobilekey.backend.auth.dto.TokenResponse
+import com.mobilekey.backend.auth.security.JwtService
+import com.mobilekey.backend.auth.security.RefreshTokenService
+import com.mobilekey.backend.common.util.UuidGenerator
+import com.mobilekey.backend.user.entity.User
+import com.mobilekey.backend.user.repository.UserRepository
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import java.util.UUID

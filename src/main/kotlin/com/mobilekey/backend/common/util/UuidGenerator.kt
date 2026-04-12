@@ -1,4 +1,4 @@
-package com.mobilekey.backend.service
+package com.mobilekey.backend.common.util
 
 import com.fasterxml.uuid.Generators
 import org.springframework.stereotype.Component
