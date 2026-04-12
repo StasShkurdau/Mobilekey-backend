@@ -27,11 +27,11 @@ class PasswordResetIntegrationTest : IntegrationTestBase() {
     }
 
     @Test
-    fun `request reset returns 200 for non-existing email to prevent enumeration`() {
+    fun `request reset returns 400 for non-existing email`() {
         val response = authClient.requestPasswordReset(PasswordResetRequest("nobody@example.com"))
 
-        assertEquals(HttpStatus.OK, response.statusCode)
-        assertEquals("If the email exists, a reset code has been sent", response.body?.message)
+        assertEquals(HttpStatus.BAD_REQUEST, response.statusCode)
+        assertEquals("User not found", response.body?.message)
     }
 
     @Test

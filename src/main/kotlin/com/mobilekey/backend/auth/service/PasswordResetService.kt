@@ -24,7 +24,8 @@ class PasswordResetService(
     }
 
     fun requestReset(email: String) {
-        val user = userRepository.findByEmail(email) ?: return
+        val user = userRepository.findByEmail(email)
+            ?: throw IllegalArgumentException("User not found")
 
         val code = generateCode()
         redisTemplate.opsForValue().set(
@@ -39,6 +40,7 @@ class PasswordResetService(
             subject = "Password Reset Code"
             text = "Your password reset code: $code\nThis code expires in 15 minutes."
         }
+
         mailSender.send(message)
     }
 
@@ -54,6 +56,7 @@ class PasswordResetService(
             ?: throw IllegalArgumentException("User not found")
 
         val updated = user.copy(password = passwordEncoder.encode(newPassword))
+
         userRepository.update(updated)
 
         redisTemplate.delete(PREFIX + email)
