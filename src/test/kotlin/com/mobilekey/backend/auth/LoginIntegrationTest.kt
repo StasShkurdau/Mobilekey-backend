@@ -30,7 +30,7 @@ class LoginIntegrationTest : IntegrationTestBase() {
         val response = authClient.loginExpectError(LoginRequest("nonexistent", "password123"))
 
         assertEquals(HttpStatus.BAD_REQUEST, response.statusCode)
-        assertEquals("Invalid credentials", response.body?.message)
+        assertEquals("auth.invalid_credentials", response.body?.code)
     }
 
     @Test
@@ -38,15 +38,15 @@ class LoginIntegrationTest : IntegrationTestBase() {
         val response = authClient.loginExpectError(LoginRequest("testuser", "wrongpassword"))
 
         assertEquals(HttpStatus.BAD_REQUEST, response.statusCode)
-        assertEquals("Invalid credentials", response.body?.message)
+        assertEquals("auth.invalid_credentials", response.body?.code)
     }
 
     @Test
-    fun `login returns same error for wrong user and wrong password`() {
+    fun `login returns same error code for wrong user and wrong password`() {
         val wrongUser = authClient.loginExpectError(LoginRequest("nobody", "password123"))
         val wrongPassword = authClient.loginExpectError(LoginRequest("testuser", "wrong"))
 
-        assertEquals(wrongUser.body?.message, wrongPassword.body?.message)
+        assertEquals(wrongUser.body?.code, wrongPassword.body?.code)
     }
 
     @Test
@@ -54,6 +54,7 @@ class LoginIntegrationTest : IntegrationTestBase() {
         val response = authClient.login(mapOf("login" to "", "password" to "password123"))
 
         assertEquals(HttpStatus.BAD_REQUEST, response.statusCode)
+        assertEquals("validation_error", response.body?.code)
     }
 
     @Test
@@ -61,6 +62,7 @@ class LoginIntegrationTest : IntegrationTestBase() {
         val response = authClient.login(mapOf("login" to "testuser", "password" to ""))
 
         assertEquals(HttpStatus.BAD_REQUEST, response.statusCode)
+        assertEquals("validation_error", response.body?.code)
     }
 
     @Test

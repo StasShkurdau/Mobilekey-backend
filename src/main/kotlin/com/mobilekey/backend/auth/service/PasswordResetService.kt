@@ -1,6 +1,8 @@
 package com.mobilekey.backend.auth.service
 
 import com.mobilekey.backend.auth.config.PasswordResetProperties
+import com.mobilekey.backend.auth.exception.AuthError
+import com.mobilekey.backend.common.exception.ApiException
 import com.mobilekey.backend.user.repository.UserRepository
 import org.springframework.data.redis.core.StringRedisTemplate
 import org.springframework.mail.SimpleMailMessage
@@ -25,7 +27,7 @@ class PasswordResetService(
 
     fun requestReset(email: String) {
         val user = userRepository.findByEmail(email)
-            ?: throw IllegalArgumentException("User not found")
+            ?: throw ApiException(AuthError.USER_NOT_FOUND)
 
         val code = generateCode()
         redisTemplate.opsForValue().set(
@@ -46,14 +48,14 @@ class PasswordResetService(
 
     fun confirmReset(email: String, code: String, newPassword: String) {
         val storedCode = redisTemplate.opsForValue().get(PREFIX + email)
-            ?: throw IllegalArgumentException("Reset code expired or not found")
+            ?: throw ApiException(AuthError.RESET_CODE_EXPIRED)
 
         if (storedCode != code) {
-            throw IllegalArgumentException("Invalid reset code")
+            throw ApiException(AuthError.INVALID_RESET_CODE)
         }
 
         val user = userRepository.findByEmail(email)
-            ?: throw IllegalArgumentException("User not found")
+            ?: throw ApiException(AuthError.USER_NOT_FOUND)
 
         val updated = user.copy(password = passwordEncoder.encode(newPassword))
 

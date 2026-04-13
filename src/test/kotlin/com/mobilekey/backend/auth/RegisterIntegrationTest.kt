@@ -25,7 +25,7 @@ class RegisterIntegrationTest : IntegrationTestBase() {
         val response = authClient.registerExpectError(RegisterRequest("duplicate", "second@example.com", "password123"))
 
         assertEquals(HttpStatus.BAD_REQUEST, response.statusCode)
-        assertEquals("Login already taken", response.body?.message)
+        assertEquals("auth.login_already_taken", response.body?.code)
     }
 
     @Test
@@ -35,7 +35,7 @@ class RegisterIntegrationTest : IntegrationTestBase() {
         val response = authClient.registerExpectError(RegisterRequest("user2", "same@example.com", "password123"))
 
         assertEquals(HttpStatus.BAD_REQUEST, response.statusCode)
-        assertEquals("Email already taken", response.body?.message)
+        assertEquals("auth.email_already_taken", response.body?.code)
     }
 
     @Test
@@ -43,6 +43,7 @@ class RegisterIntegrationTest : IntegrationTestBase() {
         val response = authClient.register(mapOf("login" to "", "email" to "test@example.com", "password" to "password123"))
 
         assertEquals(HttpStatus.BAD_REQUEST, response.statusCode)
+        assertEquals("validation_error", response.body?.code)
     }
 
     @Test
@@ -50,6 +51,7 @@ class RegisterIntegrationTest : IntegrationTestBase() {
         val response = authClient.registerExpectError(RegisterRequest("ab", "test@example.com", "password123"))
 
         assertEquals(HttpStatus.BAD_REQUEST, response.statusCode)
+        assertEquals("validation_error", response.body?.code)
     }
 
     @Test
@@ -57,6 +59,7 @@ class RegisterIntegrationTest : IntegrationTestBase() {
         val response = authClient.register(mapOf("login" to "validuser", "email" to "not-an-email", "password" to "password123"))
 
         assertEquals(HttpStatus.BAD_REQUEST, response.statusCode)
+        assertEquals("validation_error", response.body?.code)
     }
 
     @Test
@@ -64,6 +67,7 @@ class RegisterIntegrationTest : IntegrationTestBase() {
         val response = authClient.registerExpectError(RegisterRequest("validuser", "test@example.com", "12345"))
 
         assertEquals(HttpStatus.BAD_REQUEST, response.statusCode)
+        assertEquals("validation_error", response.body?.code)
     }
 
     @Test

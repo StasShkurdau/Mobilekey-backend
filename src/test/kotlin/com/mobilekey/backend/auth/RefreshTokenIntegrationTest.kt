@@ -48,15 +48,15 @@ class RefreshTokenIntegrationTest : IntegrationTestBase() {
 
         val reuse = authClient.refreshExpectError(RefreshRequest(oldRefreshToken))
 
-        assertEquals(HttpStatus.BAD_REQUEST, reuse.statusCode)
+        assertEquals(HttpStatus.UNAUTHORIZED, reuse.statusCode)
     }
 
     @Test
     fun `refresh returns 400 for invalid JWT`() {
         val response = authClient.refreshExpectError(RefreshRequest("not.a.valid.jwt"))
 
-        assertEquals(HttpStatus.BAD_REQUEST, response.statusCode)
-        assertEquals("Invalid refresh token", response.body?.message)
+        assertEquals(HttpStatus.UNAUTHORIZED, response.statusCode)
+        assertEquals("auth.invalid_refresh_token", response.body?.code)
     }
 
     @Test
@@ -64,6 +64,7 @@ class RefreshTokenIntegrationTest : IntegrationTestBase() {
         val response = authClient.refresh(mapOf("refreshToken" to ""))
 
         assertEquals(HttpStatus.BAD_REQUEST, response.statusCode)
+        assertEquals("validation_error", response.body?.code)
     }
 
     @Test
@@ -74,7 +75,7 @@ class RefreshTokenIntegrationTest : IntegrationTestBase() {
 
         val response = authClient.refreshExpectError(RefreshRequest(tokens.refreshToken))
 
-        assertEquals(HttpStatus.BAD_REQUEST, response.statusCode)
+        assertEquals(HttpStatus.UNAUTHORIZED, response.statusCode)
     }
 
     @Test

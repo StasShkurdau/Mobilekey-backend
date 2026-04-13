@@ -1,0 +1,17 @@
+{
+  "auth": {
+    "auth.login_already_taken": { "message": "Login already taken", "httpStatus": 400 },
+    "auth.email_already_taken": { "message": "Email already taken", "httpStatus": 400 },
+    "auth.invalid_credentials": { "message": "Invalid credentials", "httpStatus": 400 },
+    "auth.invalid_refresh_token": { "message": "Invalid refresh token", "httpStatus": 401 },
+    "auth.refresh_token_expired": { "message": "Refresh token is expired or revoked", "httpStatus": 401 },
+    "auth.user_not_found": { "message": "User not found", "httpStatus": 400 },
+    "auth.reset_code_expired": { "message": "Reset code expired or not found", "httpStatus": 400 },
+    "auth.invalid_reset_code": { "message": "Invalid reset code", "httpStatus": 400 }
+  },
+  "user": {
+    "user.user_not_found": { "message": "User not found", "httpStatus": 400 },
+    "user.login_already_taken": { "message": "Login already taken", "httpStatus": 400 },
+    "user.email_already_taken": { "message": "Email already taken", "httpStatus": 400 }
+  }
+}

@@ -23,15 +23,14 @@ class PasswordResetIntegrationTest : IntegrationTestBase() {
         val response = authClient.requestPasswordReset(PasswordResetRequest("test@example.com"))
 
         assertEquals(HttpStatus.OK, response.statusCode)
-        assertEquals("If the email exists, a reset code has been sent", response.body?.message)
     }
 
     @Test
     fun `request reset returns 400 for non-existing email`() {
-        val response = authClient.requestPasswordReset(PasswordResetRequest("nobody@example.com"))
+        val response = authClient.requestPasswordResetExpectError(PasswordResetRequest("nobody@example.com"))
 
         assertEquals(HttpStatus.BAD_REQUEST, response.statusCode)
-        assertEquals("User not found", response.body?.message)
+        assertEquals("auth.user_not_found", response.body?.code)
     }
 
     @Test
@@ -51,7 +50,6 @@ class PasswordResetIntegrationTest : IntegrationTestBase() {
         val response = authClient.confirmPasswordReset(PasswordResetConfirm(code, "test@example.com", "newpassword456"))
 
         assertEquals(HttpStatus.OK, response.statusCode)
-        assertEquals("Password has been reset successfully", response.body?.message)
 
         val loginResponse = authClient.login(LoginRequest("testuser", "newpassword456"))
         assertEquals(HttpStatus.OK, loginResponse.statusCode)
@@ -67,35 +65,35 @@ class PasswordResetIntegrationTest : IntegrationTestBase() {
         val response = authClient.loginExpectError(LoginRequest("testuser", "oldpassword123"))
 
         assertEquals(HttpStatus.BAD_REQUEST, response.statusCode)
-        assertEquals("Invalid credentials", response.body?.message)
+        assertEquals("auth.invalid_credentials", response.body?.code)
     }
 
     @Test
     fun `confirm reset returns 400 for wrong code`() {
         authClient.requestPasswordReset(PasswordResetRequest("test@example.com"))
 
-        val response = authClient.confirmPasswordReset(PasswordResetConfirm("000000", "test@example.com", "newpassword456"))
+        val response = authClient.confirmPasswordResetExpectError(PasswordResetConfirm("000000", "test@example.com", "newpassword456"))
 
         assertEquals(HttpStatus.BAD_REQUEST, response.statusCode)
-        assertEquals("Invalid reset code", response.body?.message)
+        assertEquals("auth.invalid_reset_code", response.body?.code)
     }
 
     @Test
     fun `confirm reset returns 400 when no reset was requested`() {
-        val response = authClient.confirmPasswordReset(PasswordResetConfirm("123456", "test@example.com", "newpassword456"))
+        val response = authClient.confirmPasswordResetExpectError(PasswordResetConfirm("123456", "test@example.com", "newpassword456"))
 
         assertEquals(HttpStatus.BAD_REQUEST, response.statusCode)
-        assertEquals("Reset code expired or not found", response.body?.message)
+        assertEquals("auth.reset_code_expired", response.body?.code)
     }
 
     @Test
     fun `confirm reset returns 400 for non-existing user email`() {
         redisTemplate.opsForValue().set("password_reset:ghost@example.com", "123456")
 
-        val response = authClient.confirmPasswordReset(PasswordResetConfirm("123456", "ghost@example.com", "newpassword456"))
+        val response = authClient.confirmPasswordResetExpectError(PasswordResetConfirm("123456", "ghost@example.com", "newpassword456"))
 
         assertEquals(HttpStatus.BAD_REQUEST, response.statusCode)
-        assertEquals("User not found", response.body?.message)
+        assertEquals("auth.user_not_found", response.body?.code)
     }
 
     @Test
@@ -116,10 +114,10 @@ class PasswordResetIntegrationTest : IntegrationTestBase() {
 
         authClient.confirmPasswordReset(PasswordResetConfirm(code, "test@example.com", "newpassword456"))
 
-        val response = authClient.confirmPasswordReset(PasswordResetConfirm(code, "test@example.com", "anotherpassword"))
+        val response = authClient.confirmPasswordResetExpectError(PasswordResetConfirm(code, "test@example.com", "anotherpassword"))
 
         assertEquals(HttpStatus.BAD_REQUEST, response.statusCode)
-        assertEquals("Reset code expired or not found", response.body?.message)
+        assertEquals("auth.reset_code_expired", response.body?.code)
     }
 
     @Test
@@ -127,12 +125,14 @@ class PasswordResetIntegrationTest : IntegrationTestBase() {
         val response = authClient.requestPasswordReset(mapOf("email" to "not-an-email"))
 
         assertEquals(HttpStatus.BAD_REQUEST, response.statusCode)
+        assertEquals("validation_error", response.body?.code)
     }
 
     @Test
     fun `confirm reset returns 400 when new password is too short`() {
-        val response = authClient.confirmPasswordReset(PasswordResetConfirm("123456", "test@example.com", "12345"))
+        val response = authClient.confirmPasswordResetExpectError(PasswordResetConfirm("123456", "test@example.com", "12345"))
 
         assertEquals(HttpStatus.BAD_REQUEST, response.statusCode)
+        assertEquals("validation_error", response.body?.code)
     }
 }

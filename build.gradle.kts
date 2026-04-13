@@ -112,3 +112,11 @@ tasks.withType<KotlinCompile> {
 tasks.withType<Test> {
     useJUnitPlatform()
 }
+
+tasks.register<JavaExec>("generateErrorCodes") {
+    group = "codegen"
+    description = "Generate error-codes.json and error-codes.ts for frontend"
+    classpath = sourceSets["main"].runtimeClasspath
+    mainClass.set("com.mobilekey.backend.common.codegen.ErrorCodeGenerator")
+    args = listOf("${project.projectDir}/generated")
+}

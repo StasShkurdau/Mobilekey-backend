@@ -3,8 +3,10 @@ package com.mobilekey.backend.auth.service
 import com.mobilekey.backend.auth.dto.LoginRequest
 import com.mobilekey.backend.auth.dto.RegisterRequest
 import com.mobilekey.backend.auth.dto.TokenResponse
+import com.mobilekey.backend.auth.exception.AuthError
 import com.mobilekey.backend.auth.security.JwtService
 import com.mobilekey.backend.auth.security.RefreshTokenService
+import com.mobilekey.backend.common.exception.ApiException
 import com.mobilekey.backend.common.util.UuidGenerator
 import com.mobilekey.backend.user.entity.User
 import com.mobilekey.backend.user.repository.UserRepository
@@ -23,10 +25,10 @@ class AuthService(
 
     fun register(request: RegisterRequest): TokenResponse {
         if (userRepository.existsByLogin(request.login)) {
-            throw IllegalArgumentException("Login already taken")
+            throw ApiException(AuthError.LOGIN_ALREADY_TAKEN)
         }
         if (userRepository.existsByEmail(request.email)) {
-            throw IllegalArgumentException("Email already taken")
+            throw ApiException(AuthError.EMAIL_ALREADY_TAKEN)
         }
 
         val user = User(
@@ -42,10 +44,10 @@ class AuthService(
 
     fun login(request: LoginRequest): TokenResponse {
         val user = userRepository.findByLogin(request.login)
-            ?: throw IllegalArgumentException("Invalid credentials")
+            ?: throw ApiException(AuthError.INVALID_CREDENTIALS)
 
         if (!passwordEncoder.matches(request.password, user.password)) {
-            throw IllegalArgumentException("Invalid credentials")
+            throw ApiException(AuthError.INVALID_CREDENTIALS)
         }
 
         return generateTokens(user)
@@ -53,14 +55,14 @@ class AuthService(
 
     fun refresh(refreshToken: String): TokenResponse {
         val userId = jwtService.validateRefreshToken(refreshToken)
-            ?: throw IllegalArgumentException("Invalid refresh token")
+            ?: throw ApiException(AuthError.INVALID_REFRESH_TOKEN)
 
         if (!refreshTokenService.isValid(userId, refreshToken)) {
-            throw IllegalArgumentException("Refresh token is expired or revoked")
+            throw ApiException(AuthError.REFRESH_TOKEN_EXPIRED)
         }
 
         val user = userRepository.findById(userId)
-            ?: throw IllegalArgumentException("User not found")
+            ?: throw ApiException(AuthError.USER_NOT_FOUND)
 
         refreshTokenService.delete(userId)
         return generateTokens(user)
