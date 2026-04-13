@@ -1,6 +1,5 @@
 package com.mobilekey.backend.user.dto
 
-import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.Size
 import java.util.UUID
 
@@ -14,6 +13,6 @@ data class UpdateUserRequest(
     @field:Size(min = 3, max = 255)
     val login: String?,
 
-    @field:Email
-    val email: String?,
+    @field:Size(min = 8, max = 255)
+    val newPassword: String?,
 )

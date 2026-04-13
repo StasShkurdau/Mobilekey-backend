@@ -65,7 +65,6 @@ class UserRepository(private val dsl: DSLContext) {
     fun update(user: User): User {
         dsl.update(USERS)
             .set(LOGIN, user.login)
-            .set(EMAIL, user.email)
             .set(PASSWORD, user.password)
             .where(ID.eq(user.id))
             .execute()

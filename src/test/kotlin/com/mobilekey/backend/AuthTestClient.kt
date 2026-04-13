@@ -8,6 +8,7 @@ import com.mobilekey.backend.auth.dto.RegisterRequest
 import com.mobilekey.backend.auth.dto.TokenResponse
 import com.mobilekey.backend.common.dto.ErrorResponse
 import com.mobilekey.backend.common.dto.MessageResponse
+import com.mobilekey.backend.user.dto.UpdateUserRequest
 import com.mobilekey.backend.user.dto.UserResponse
 import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.http.HttpEntity
@@ -84,6 +85,22 @@ class AuthTestClient(private val restTemplate: TestRestTemplate) {
             HttpMethod.GET,
             HttpEntity<Void>(bearerHeaders(accessToken)),
             UserResponse::class.java,
+        )
+
+    fun updateProfile(accessToken: String, request: UpdateUserRequest): ResponseEntity<UserResponse> =
+        restTemplate.exchange(
+            "/api/users/me",
+            HttpMethod.PUT,
+            HttpEntity(request, bearerHeaders(accessToken)),
+            UserResponse::class.java,
+        )
+
+    fun updateProfileExpectError(accessToken: String, request: UpdateUserRequest): ResponseEntity<ErrorResponse> =
+        restTemplate.exchange(
+            "/api/users/me",
+            HttpMethod.PUT,
+            HttpEntity(request, bearerHeaders(accessToken)),
+            ErrorResponse::class.java,
         )
 
     private fun bearerHeaders(token: String): HttpHeaders =

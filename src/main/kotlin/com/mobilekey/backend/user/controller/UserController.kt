@@ -24,6 +24,7 @@ class UserController(private val userService: UserService) {
         @Valid @RequestBody request: UpdateUserRequest,
     ): UserResponse {
         val userId = UUID.fromString(principal.name)
+
         return userService.updateProfile(userId, request)
     }
 }
