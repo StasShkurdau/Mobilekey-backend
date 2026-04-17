@@ -1,8 +1,16 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
+buildscript {
+    dependencies {
+        classpath("org.flywaydb:flyway-database-postgresql:11.1.1")
+        classpath("org.postgresql:postgresql:42.7.4")
+    }
+}
+
 plugins {
     id("org.springframework.boot") version "3.4.4"
     id("io.spring.dependency-management") version "1.1.7"
+    id("org.flywaydb.flyway") version "11.1.1"
     id("nu.studer.jooq") version "9.0"
     kotlin("jvm") version "2.1.10"
     kotlin("plugin.spring") version "2.1.10"
@@ -19,6 +27,8 @@ java {
 repositories {
     mavenCentral()
 }
+
+val jooqGeneratedDir = "generated/jooq/src/main/kotlin"
 
 dependencies {
     // Spring Boot
@@ -59,10 +69,24 @@ dependencies {
     testImplementation("io.projectreactor:reactor-test")
 }
 
+kotlin {
+    sourceSets.main {
+        kotlin.srcDir(jooqGeneratedDir)
+    }
+}
+
+flyway {
+    url = "jdbc:postgresql://localhost:5432/mobilekey"
+    user = "mobilekey"
+    password = "mobilekey"
+    locations = arrayOf("filesystem:${project.projectDir}/src/main/resources/db/migration")
+}
+
 jooq {
     version.set(dependencyManagement.importedProperties["jooq.version"])
     configurations {
         create("main") {
+            generateSchemaSourceOnCompilation.set(false)
             jooqConfiguration.apply {
                 jdbc.apply {
                     driver = "org.postgresql.Driver"
@@ -82,10 +106,13 @@ jooq {
                         isRecords = true
                         isImmutablePojos = false
                         isFluentSetters = true
+                        isKotlinNotNullRecordAttributes = true
+                        isKotlinNotNullInterfaceAttributes = true
+                        isKotlinNotNullPojoAttributes = true
                     }
                     target.apply {
                         packageName = "com.mobilekey.backend.generated"
-                        directory = "src/main/kotlin"
+                        directory = jooqGeneratedDir
                     }
                 }
             }
@@ -93,18 +120,8 @@ jooq {
     }
 }
 
-// jOOQ code generation requires a running database, so don't run it automatically
 tasks.named("generateJooq") {
-    enabled = false
-}
-
-tasks.register("jooqGenerate") {
-    group = "jooq"
-    description = "Generate jOOQ classes (requires running PostgreSQL)"
-    doFirst {
-        tasks.named("generateJooq") { enabled = true }
-    }
-    finalizedBy("generateJooq")
+    dependsOn("flywayMigrate")
 }
 
 tasks.withType<KotlinCompile> {
