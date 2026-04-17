@@ -3,9 +3,9 @@ package com.mobilekey.backend.common.exception
 import com.mobilekey.backend.common.dto.ErrorResponse
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
+import org.springframework.web.bind.support.WebExchangeBindException
 
 @RestControllerAdvice
 class GlobalExceptionHandler {
@@ -18,8 +18,8 @@ class GlobalExceptionHandler {
         )
     }
 
-    @ExceptionHandler(MethodArgumentNotValidException::class)
-    fun handleValidation(e: MethodArgumentNotValidException): ResponseEntity<ErrorResponse> {
+    @ExceptionHandler(WebExchangeBindException::class)
+    fun handleValidation(e: WebExchangeBindException): ResponseEntity<ErrorResponse> {
         val message = e.bindingResult.fieldErrors
             .joinToString(", ") { "${it.field}: ${it.defaultMessage}" }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(

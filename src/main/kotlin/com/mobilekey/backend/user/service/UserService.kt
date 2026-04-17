@@ -16,17 +16,17 @@ class UserService(
     private val passwordEncoder: PasswordEncoder,
 ) {
 
-    fun findById(id: UUID): User {
+    suspend fun findById(id: UUID): User {
         return userRepository.findById(id)
             ?: throw ApiException(UserError.USER_NOT_FOUND)
     }
 
-    fun getProfile(userId: UUID): UserResponse {
+    suspend fun getProfile(userId: UUID): UserResponse {
         val user = findById(userId)
         return user.toResponse()
     }
 
-    fun updateProfile(userId: UUID, request: UpdateUserRequest): UserResponse {
+    suspend fun updateProfile(userId: UUID, request: UpdateUserRequest): UserResponse {
         val user = findById(userId)
 
         val newLogin = request.login
@@ -41,7 +41,7 @@ class UserService(
         return userRepository.update(updated).toResponse()
     }
 
-    private fun asserLoginAlreadyUsed(newLogin: String?, user: User) {
+    private suspend fun asserLoginAlreadyUsed(newLogin: String?, user: User) {
         newLogin?.let { login ->
             if (login != user.login && userRepository.existsByLogin(login)) {
                 throw ApiException(UserError.LOGIN_ALREADY_TAKEN)

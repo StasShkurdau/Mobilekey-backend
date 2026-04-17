@@ -3,27 +3,27 @@ package com.mobilekey.backend.auth.config
 import com.mobilekey.backend.auth.security.JwtAuthFilter
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.security.config.annotation.web.builders.HttpSecurity
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
-import org.springframework.security.config.http.SessionCreationPolicy
-import org.springframework.security.web.SecurityFilterChain
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
+import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity
+import org.springframework.security.config.web.server.SecurityWebFiltersOrder
+import org.springframework.security.config.web.server.ServerHttpSecurity
+import org.springframework.security.web.server.SecurityWebFilterChain
 
 @Configuration
-@EnableWebSecurity
+@EnableWebFluxSecurity
 class SecurityConfig(private val jwtAuthFilter: JwtAuthFilter) {
 
     @Bean
-    fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
-        http
+    fun securityWebFilterChain(http: ServerHttpSecurity): SecurityWebFilterChain {
+        return http
             .csrf { it.disable() }
-            .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
-            .authorizeHttpRequests {
+            .httpBasic { it.disable() }
+            .formLogin { it.disable() }
+            .authorizeExchange {
                 it
-                    .requestMatchers("/api/auth/**").permitAll()
-                    .anyRequest().authenticated()
+                    .pathMatchers("/api/auth/**").permitAll()
+                    .anyExchange().authenticated()
             }
-            .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter::class.java)
-        return http.build()
+            .addFilterAt(jwtAuthFilter, SecurityWebFiltersOrder.AUTHENTICATION)
+            .build()
     }
 }

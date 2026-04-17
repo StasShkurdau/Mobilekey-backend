@@ -1,41 +1,25 @@
 package com.mobilekey.backend.auth.security
 
-import com.mobilekey.backend.auth.config.JwtProperties
-import org.springframework.data.redis.core.StringRedisTemplate
+import com.mobilekey.backend.auth.repository.RefreshTokenRepository
 import org.springframework.stereotype.Service
 import java.util.UUID
-import java.util.concurrent.TimeUnit
 
 @Service
 class RefreshTokenService(
-    private val redisTemplate: StringRedisTemplate,
-    private val jwtProperties: JwtProperties,
+    private val refreshTokenRepository: RefreshTokenRepository,
 ) {
 
-    companion object {
-        private const val PREFIX = "refresh_token:"
+    suspend fun save(userId: UUID, refreshToken: String) {
+        refreshTokenRepository.save(userId, refreshToken)
     }
 
-    fun save(userId: UUID, refreshToken: String) {
-        val key = PREFIX + userId
-        redisTemplate.opsForValue().set(
-            key,
-            refreshToken,
-            jwtProperties.refreshExpirationMs,
-            TimeUnit.MILLISECONDS,
-        )
+    suspend fun delete(userId: UUID) {
+        refreshTokenRepository.delete(userId)
     }
 
-    fun get(userId: UUID): String? {
-        return redisTemplate.opsForValue().get(PREFIX + userId)
-    }
-
-    fun delete(userId: UUID) {
-        redisTemplate.delete(PREFIX + userId)
-    }
-
-    fun isValid(userId: UUID, refreshToken: String): Boolean {
-        val stored = get(userId)
-        return stored != null && stored == refreshToken
+    suspend fun isValid(userId: UUID, refreshToken: String): Boolean {
+        val storedToken = refreshTokenRepository.find(userId)
+        
+        return (storedToken != null) && (storedToken == refreshToken)
     }
 }

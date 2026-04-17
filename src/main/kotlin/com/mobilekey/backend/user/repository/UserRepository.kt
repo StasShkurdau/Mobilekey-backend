@@ -1,7 +1,7 @@
 package com.mobilekey.backend.user.repository
 
+import com.mobilekey.backend.common.config.JooqExecutor
 import com.mobilekey.backend.user.entity.User
-import org.jooq.DSLContext
 import org.jooq.Record
 import org.jooq.impl.DSL.field
 import org.jooq.impl.DSL.table
@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository
 import java.util.UUID
 
 @Repository
-class UserRepository(private val dsl: DSLContext) {
+class UserRepository(private val jooq: JooqExecutor) {
 
     companion object {
         private val USERS = table("users")
@@ -19,56 +19,56 @@ class UserRepository(private val dsl: DSLContext) {
         private val PASSWORD = field("password", String::class.java)
     }
 
-    fun save(user: User): User {
-        dsl.insertInto(USERS)
+    suspend fun save(user: User): User = jooq.execute {
+        insertInto(USERS)
             .set(ID, user.id)
             .set(LOGIN, user.login)
             .set(EMAIL, user.email)
             .set(PASSWORD, user.password)
             .execute()
-        return user
+        user
     }
 
-    fun findById(id: UUID): User? {
-        return dsl.select(ID, LOGIN, EMAIL, PASSWORD)
+    suspend fun findById(id: UUID): User? = jooq.execute {
+        select(ID, LOGIN, EMAIL, PASSWORD)
             .from(USERS)
             .where(ID.eq(id))
             .fetchOne { toUser(it) }
     }
 
-    fun findByLogin(login: String): User? {
-        return dsl.select(ID, LOGIN, EMAIL, PASSWORD)
+    suspend fun findByLogin(login: String): User? = jooq.execute {
+        select(ID, LOGIN, EMAIL, PASSWORD)
             .from(USERS)
             .where(LOGIN.eq(login))
             .fetchOne { toUser(it) }
     }
 
-    fun findByEmail(email: String): User? {
-        return dsl.select(ID, LOGIN, EMAIL, PASSWORD)
+    suspend fun findByEmail(email: String): User? = jooq.execute {
+        select(ID, LOGIN, EMAIL, PASSWORD)
             .from(USERS)
             .where(EMAIL.eq(email))
             .fetchOne { toUser(it) }
     }
 
-    fun existsByLogin(login: String): Boolean {
-        return dsl.fetchExists(
-            dsl.selectOne().from(USERS).where(LOGIN.eq(login))
+    suspend fun existsByLogin(login: String): Boolean = jooq.execute {
+        fetchExists(
+            selectOne().from(USERS).where(LOGIN.eq(login))
         )
     }
 
-    fun existsByEmail(email: String): Boolean {
-        return dsl.fetchExists(
-            dsl.selectOne().from(USERS).where(EMAIL.eq(email))
+    suspend fun existsByEmail(email: String): Boolean = jooq.execute {
+        fetchExists(
+            selectOne().from(USERS).where(EMAIL.eq(email))
         )
     }
 
-    fun update(user: User): User {
-        dsl.update(USERS)
+    suspend fun update(user: User): User = jooq.execute {
+        update(USERS)
             .set(LOGIN, user.login)
             .set(PASSWORD, user.password)
             .where(ID.eq(user.id))
             .execute()
-        return user
+        user
     }
 
     private fun toUser(record: Record): User {

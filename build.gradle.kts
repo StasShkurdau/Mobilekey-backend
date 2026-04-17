@@ -22,15 +22,19 @@ repositories {
 
 dependencies {
     // Spring Boot
-    implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-webflux")
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-mail")
-    implementation("org.springframework.boot:spring-boot-starter-data-redis")
+    implementation("org.springframework.boot:spring-boot-starter-data-redis-reactive")
 
     // Kotlin
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
+
+    // Kotlin Coroutines
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
 
     // Database
     implementation("org.springframework.boot:spring-boot-starter-jooq")
@@ -52,6 +56,7 @@ dependencies {
     // Test
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.security:spring-security-test")
+    testImplementation("io.projectreactor:reactor-test")
 }
 
 jooq {
@@ -104,7 +109,7 @@ tasks.register("jooqGenerate") {
 
 tasks.withType<KotlinCompile> {
     compilerOptions {
-        freeCompilerArgs.set(listOf("-Xjsr305=strict"))
+        freeCompilerArgs.set(listOf("-Xjsr305=strict", "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi"))
         jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_21)
     }
 }

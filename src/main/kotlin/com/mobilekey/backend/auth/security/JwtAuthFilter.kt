@@ -1,30 +1,31 @@
 package com.mobilekey.backend.auth.security
 
-import jakarta.servlet.FilterChain
-import jakarta.servlet.http.HttpServletRequest
-import jakarta.servlet.http.HttpServletResponse
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
-import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.security.core.context.ReactiveSecurityContextHolder
 import org.springframework.stereotype.Component
-import org.springframework.web.filter.OncePerRequestFilter
+import org.springframework.web.server.ServerWebExchange
+import org.springframework.web.server.WebFilter
+import org.springframework.web.server.WebFilterChain
+import reactor.core.publisher.Mono
 
 @Component
-class JwtAuthFilter(private val jwtService: JwtService) : OncePerRequestFilter() {
+class JwtAuthFilter(private val jwtService: JwtService) : WebFilter {
 
-    override fun doFilterInternal(
-        request: HttpServletRequest,
-        response: HttpServletResponse,
-        filterChain: FilterChain,
-    ) {
-        val header = request.getHeader("Authorization")
+    override fun filter(exchange: ServerWebExchange, chain: WebFilterChain): Mono<Void> {
+        val header = exchange.request.headers.getFirst("Authorization")
+
         if (header != null && header.startsWith("Bearer ")) {
             val token = header.substring(7)
+
             val userId = jwtService.validateAccessToken(token)
+
             if (userId != null) {
                 val auth = UsernamePasswordAuthenticationToken(userId, null, emptyList())
-                SecurityContextHolder.getContext().authentication = auth
+
+                return chain.filter(exchange)
+                    .contextWrite(ReactiveSecurityContextHolder.withAuthentication(auth))
             }
         }
-        filterChain.doFilter(request, response)
+        return chain.filter(exchange)
     }
 }

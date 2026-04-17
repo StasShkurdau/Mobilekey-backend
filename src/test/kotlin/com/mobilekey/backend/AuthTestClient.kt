@@ -10,99 +10,124 @@ import com.mobilekey.backend.common.dto.ErrorResponse
 import com.mobilekey.backend.common.dto.MessageResponse
 import com.mobilekey.backend.user.dto.UpdateUserRequest
 import com.mobilekey.backend.user.dto.UserResponse
-import org.springframework.boot.test.web.client.TestRestTemplate
-import org.springframework.http.HttpEntity
-import org.springframework.http.HttpHeaders
-import org.springframework.http.HttpMethod
-import org.springframework.http.ResponseEntity
+import org.springframework.http.HttpStatusCode
+import org.springframework.test.web.reactive.server.WebTestClient
 
-class AuthTestClient(private val restTemplate: TestRestTemplate) {
+class AuthTestClient(private val webTestClient: WebTestClient) {
 
     // --- Register ---
 
-    fun register(request: RegisterRequest): ResponseEntity<TokenResponse> =
-        restTemplate.postForEntity("/api/auth/register", request, TokenResponse::class.java)
+    fun register(request: RegisterRequest): TestResponse<TokenResponse> =
+        post("/api/auth/register", request)
 
-    fun register(body: Map<String, Any?>): ResponseEntity<ErrorResponse> =
-        restTemplate.postForEntity("/api/auth/register", body, ErrorResponse::class.java)
+    fun register(body: Map<String, Any?>): TestResponse<ErrorResponse> =
+        post("/api/auth/register", body)
 
-    fun registerExpectError(request: RegisterRequest): ResponseEntity<ErrorResponse> =
-        restTemplate.postForEntity("/api/auth/register", request, ErrorResponse::class.java)
+    fun registerExpectError(request: RegisterRequest): TestResponse<ErrorResponse> =
+        post("/api/auth/register", request)
 
     // --- Login ---
 
-    fun login(request: LoginRequest): ResponseEntity<TokenResponse> =
-        restTemplate.postForEntity("/api/auth/login", request, TokenResponse::class.java)
+    fun login(request: LoginRequest): TestResponse<TokenResponse> =
+        post("/api/auth/login", request)
 
-    fun login(body: Map<String, Any?>): ResponseEntity<ErrorResponse> =
-        restTemplate.postForEntity("/api/auth/login", body, ErrorResponse::class.java)
+    fun login(body: Map<String, Any?>): TestResponse<ErrorResponse> =
+        post("/api/auth/login", body)
 
-    fun loginExpectError(request: LoginRequest): ResponseEntity<ErrorResponse> =
-        restTemplate.postForEntity("/api/auth/login", request, ErrorResponse::class.java)
+    fun loginExpectError(request: LoginRequest): TestResponse<ErrorResponse> =
+        post("/api/auth/login", request)
 
     // --- Refresh ---
 
-    fun refresh(request: RefreshRequest): ResponseEntity<TokenResponse> =
-        restTemplate.postForEntity("/api/auth/refresh", request, TokenResponse::class.java)
+    fun refresh(request: RefreshRequest): TestResponse<TokenResponse> =
+        post("/api/auth/refresh", request)
 
-    fun refresh(body: Map<String, Any?>): ResponseEntity<ErrorResponse> =
-        restTemplate.postForEntity("/api/auth/refresh", body, ErrorResponse::class.java)
+    fun refresh(body: Map<String, Any?>): TestResponse<ErrorResponse> =
+        post("/api/auth/refresh", body)
 
-    fun refreshExpectError(request: RefreshRequest): ResponseEntity<ErrorResponse> =
-        restTemplate.postForEntity("/api/auth/refresh", request, ErrorResponse::class.java)
+    fun refreshExpectError(request: RefreshRequest): TestResponse<ErrorResponse> =
+        post("/api/auth/refresh", request)
 
     // --- Logout ---
 
-    fun logout(accessToken: String): ResponseEntity<MessageResponse> =
-        restTemplate.postForEntity(
-            "/api/auth/logout",
-            HttpEntity<Void>(bearerHeaders(accessToken)),
-            MessageResponse::class.java,
-        )
+    fun logout(accessToken: String): TestResponse<MessageResponse> =
+        postWithAuth("/api/auth/logout", null, accessToken)
 
     // --- Password Reset ---
 
-    fun requestPasswordReset(request: PasswordResetRequest): ResponseEntity<MessageResponse> =
-        restTemplate.postForEntity("/api/auth/password-reset/request", request, MessageResponse::class.java)
+    fun requestPasswordReset(request: PasswordResetRequest): TestResponse<MessageResponse> =
+        post("/api/auth/password-reset/request", request)
 
-    fun requestPasswordReset(body: Map<String, Any?>): ResponseEntity<ErrorResponse> =
-        restTemplate.postForEntity("/api/auth/password-reset/request", body, ErrorResponse::class.java)
+    fun requestPasswordReset(body: Map<String, Any?>): TestResponse<ErrorResponse> =
+        post("/api/auth/password-reset/request", body)
 
-    fun requestPasswordResetExpectError(request: PasswordResetRequest): ResponseEntity<ErrorResponse> =
-        restTemplate.postForEntity("/api/auth/password-reset/request", request, ErrorResponse::class.java)
+    fun requestPasswordResetExpectError(request: PasswordResetRequest): TestResponse<ErrorResponse> =
+        post("/api/auth/password-reset/request", request)
 
-    fun confirmPasswordReset(request: PasswordResetConfirm): ResponseEntity<MessageResponse> =
-        restTemplate.postForEntity("/api/auth/password-reset/confirm", request, MessageResponse::class.java)
+    fun confirmPasswordReset(request: PasswordResetConfirm): TestResponse<MessageResponse> =
+        post("/api/auth/password-reset/confirm", request)
 
-    fun confirmPasswordResetExpectError(request: PasswordResetConfirm): ResponseEntity<ErrorResponse> =
-        restTemplate.postForEntity("/api/auth/password-reset/confirm", request, ErrorResponse::class.java)
+    fun confirmPasswordResetExpectError(request: PasswordResetConfirm): TestResponse<ErrorResponse> =
+        post("/api/auth/password-reset/confirm", request)
 
     // --- Profile ---
 
-    fun getProfile(accessToken: String): ResponseEntity<UserResponse> =
-        restTemplate.exchange(
-            "/api/users/me",
-            HttpMethod.GET,
-            HttpEntity<Void>(bearerHeaders(accessToken)),
-            UserResponse::class.java,
-        )
+    fun getProfile(accessToken: String): TestResponse<UserResponse> {
+        val result = webTestClient.get()
+            .uri("/api/users/me")
+            .headers { it.setBearerAuth(accessToken) }
+            .exchange()
+            .returnResult(UserResponse::class.java)
+        val status = result.status
+        val body = result.responseBody.blockFirst()
+        return TestResponse(status, body)
+    }
 
-    fun updateProfile(accessToken: String, request: UpdateUserRequest): ResponseEntity<UserResponse> =
-        restTemplate.exchange(
-            "/api/users/me",
-            HttpMethod.PUT,
-            HttpEntity(request, bearerHeaders(accessToken)),
-            UserResponse::class.java,
-        )
+    fun updateProfile(accessToken: String, request: UpdateUserRequest): TestResponse<UserResponse> =
+        putWithAuth("/api/users/me", request, accessToken)
 
-    fun updateProfileExpectError(accessToken: String, request: UpdateUserRequest): ResponseEntity<ErrorResponse> =
-        restTemplate.exchange(
-            "/api/users/me",
-            HttpMethod.PUT,
-            HttpEntity(request, bearerHeaders(accessToken)),
-            ErrorResponse::class.java,
-        )
+    fun updateProfileExpectError(accessToken: String, request: UpdateUserRequest): TestResponse<ErrorResponse> =
+        putWithAuth("/api/users/me", request, accessToken)
 
-    private fun bearerHeaders(token: String): HttpHeaders =
-        HttpHeaders().apply { setBearerAuth(token) }
+    // --- Helpers ---
+
+    private inline fun <reified T : Any> post(uri: String, body: Any?): TestResponse<T> {
+        val result = webTestClient.post()
+            .uri(uri)
+            .let { if (body != null) it.bodyValue(body) else it }
+            .exchange()
+            .returnResult(T::class.java)
+        val status = result.status
+        val responseBody = result.responseBody.blockFirst()
+        return TestResponse(status, responseBody)
+    }
+
+    private inline fun <reified T : Any> postWithAuth(uri: String, body: Any?, accessToken: String): TestResponse<T> {
+        val result = webTestClient.post()
+            .uri(uri)
+            .headers { it.setBearerAuth(accessToken) }
+            .let { if (body != null) it.bodyValue(body) else it }
+            .exchange()
+            .returnResult(T::class.java)
+        val status = result.status
+        val responseBody = result.responseBody.blockFirst()
+        return TestResponse(status, responseBody)
+    }
+
+    private inline fun <reified T : Any> putWithAuth(uri: String, body: Any?, accessToken: String): TestResponse<T> {
+        val result = webTestClient.put()
+            .uri(uri)
+            .headers { it.setBearerAuth(accessToken) }
+            .let { if (body != null) it.bodyValue(body) else it }
+            .exchange()
+            .returnResult(T::class.java)
+        val status = result.status
+        val responseBody = result.responseBody.blockFirst()
+        return TestResponse(status, responseBody)
+    }
 }
+
+data class TestResponse<T>(
+    val statusCode: HttpStatusCode,
+    val body: T?,
+)

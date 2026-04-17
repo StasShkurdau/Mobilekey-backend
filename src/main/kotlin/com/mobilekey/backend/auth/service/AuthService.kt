@@ -10,6 +10,8 @@ import com.mobilekey.backend.common.exception.ApiException
 import com.mobilekey.backend.common.util.UuidGenerator
 import com.mobilekey.backend.user.entity.User
 import com.mobilekey.backend.user.repository.UserRepository
+import kotlinx.coroutines.reactor.awaitSingle
+import org.springframework.security.core.context.ReactiveSecurityContextHolder
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import java.util.UUID
@@ -23,7 +25,7 @@ class AuthService(
     private val uuidGenerator: UuidGenerator,
 ) {
 
-    fun register(request: RegisterRequest): TokenResponse {
+    suspend fun register(request: RegisterRequest): TokenResponse {
         if (userRepository.existsByLogin(request.login)) {
             throw ApiException(AuthError.LOGIN_ALREADY_TAKEN)
         }
@@ -39,10 +41,11 @@ class AuthService(
         )
 
         userRepository.save(user)
+
         return generateTokens(user)
     }
 
-    fun login(request: LoginRequest): TokenResponse {
+    suspend fun login(request: LoginRequest): TokenResponse {
         val user = userRepository.findByLogin(request.login)
             ?: throw ApiException(AuthError.INVALID_CREDENTIALS)
 
@@ -53,7 +56,7 @@ class AuthService(
         return generateTokens(user)
     }
 
-    fun refresh(refreshToken: String): TokenResponse {
+    suspend fun refresh(refreshToken: String): TokenResponse {
         val userId = jwtService.validateRefreshToken(refreshToken)
             ?: throw ApiException(AuthError.INVALID_REFRESH_TOKEN)
 
@@ -65,17 +68,30 @@ class AuthService(
             ?: throw ApiException(AuthError.USER_NOT_FOUND)
 
         refreshTokenService.delete(userId)
+
         return generateTokens(user)
     }
 
-    fun logout(userId: UUID) {
+    suspend fun logout() {
+        val userId = currentUserId()
+
         refreshTokenService.delete(userId)
     }
 
-    private fun generateTokens(user: User): TokenResponse {
+    suspend fun currentUserId(): UUID {
+        val authentication = ReactiveSecurityContextHolder.getContext()
+            .map { it.authentication }
+            .awaitSingle()
+
+        return authentication.principal as UUID
+    }
+
+    private suspend fun generateTokens(user: User): TokenResponse {
         val accessToken = jwtService.generateAccessToken(user.id)
         val refreshToken = jwtService.generateRefreshToken(user.id)
+
         refreshTokenService.save(user.id, refreshToken)
+
         return TokenResponse(accessToken = accessToken, refreshToken = refreshToken)
     }
 }
