@@ -4,11 +4,23 @@
 package com.mobilekey.backend.generated.tables.references
 
 
-import com.mobilekey.backend.generated.tables.User
+import com.mobilekey.backend.generated.tables.File
+import com.mobilekey.backend.generated.tables.UpdateAvatarRequest
+import com.mobilekey.backend.generated.tables.UserProfile
 
 
 
 /**
- * The table <code>public.user</code>.
+ * The table <code>public.file</code>.
  */
-val USER: User = User.USER
+val FILE: File = File.FILE
+
+/**
+ * The table <code>public.update_avatar_request</code>.
+ */
+val UPDATE_AVATAR_REQUEST: UpdateAvatarRequest = UpdateAvatarRequest.UPDATE_AVATAR_REQUEST
+
+/**
+ * The table <code>public.user_profile</code>.
+ */
+val USER_PROFILE: UserProfile = UserProfile.USER_PROFILE

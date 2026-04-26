@@ -4,7 +4,9 @@
 package com.mobilekey.backend.generated
 
 
-import com.mobilekey.backend.generated.tables.User
+import com.mobilekey.backend.generated.tables.File
+import com.mobilekey.backend.generated.tables.UpdateAvatarRequest
+import com.mobilekey.backend.generated.tables.UserProfile
 
 import kotlin.collections.List
 
@@ -27,13 +29,25 @@ open class Public : SchemaImpl("public", DefaultCatalog.DEFAULT_CATALOG) {
     }
 
     /**
-     * The table <code>public.user</code>.
+     * The table <code>public.file</code>.
      */
-    val USER: User get() = User.USER
+    val FILE: File get() = File.FILE
+
+    /**
+     * The table <code>public.update_avatar_request</code>.
+     */
+    val UPDATE_AVATAR_REQUEST: UpdateAvatarRequest get() = UpdateAvatarRequest.UPDATE_AVATAR_REQUEST
+
+    /**
+     * The table <code>public.user_profile</code>.
+     */
+    val USER_PROFILE: UserProfile get() = UserProfile.USER_PROFILE
 
     override fun getCatalog(): Catalog = DefaultCatalog.DEFAULT_CATALOG
 
     override fun getTables(): List<Table<*>> = listOf(
-        User.USER
+        File.FILE,
+        UpdateAvatarRequest.UPDATE_AVATAR_REQUEST,
+        UserProfile.USER_PROFILE
     )
 }

@@ -37,3 +37,16 @@ app:
     refresh-expiration-ms: 2592000000  # 30 days
   password-reset:
     expiration-ms: 900000              # 15 minutes
+  minio:
+    endpoint: ${MINIO_ENDPOINT:http://localhost:9000}
+    access-key: ${MINIO_ACCESS_KEY:mobilekey}
+    secret-key: ${MINIO_SECRET_KEY:mobilekey}
+    bucket: ${MINIO_BUCKET:mobilekey}
+  file:
+    max-size: 10485760                 # 10MB
+    allowed-types:
+      - image/jpeg
+      - image/png
+      - image/webp
+    temp-expiration-hours: 5
+    deleted-expiration-hours: 24

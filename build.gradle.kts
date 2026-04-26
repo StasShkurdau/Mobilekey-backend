@@ -63,6 +63,9 @@ dependencies {
     // UUID v7
     implementation("com.fasterxml.uuid:java-uuid-generator:5.1.0")
 
+    // MinIO
+    implementation("io.minio:minio:8.5.17")
+
     // Test
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.security:spring-security-test")
@@ -80,6 +83,7 @@ flyway {
     user = "mobilekey"
     password = "mobilekey"
     locations = arrayOf("filesystem:${project.projectDir}/src/main/resources/db/migration")
+    cleanDisabled = false
 }
 
 jooq {

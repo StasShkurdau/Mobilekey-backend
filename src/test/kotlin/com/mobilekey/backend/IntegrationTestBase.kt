@@ -45,7 +45,10 @@ abstract class IntegrationTestBase {
 
     @BeforeEach
     fun cleanUp() {
-        dsl.deleteFrom(table("users")).execute()
+        dsl.execute("UPDATE user_profile SET avatar_id = NULL")
+        dsl.deleteFrom(table("update_avatar_request")).execute()
+        dsl.deleteFrom(table("file")).execute()
+        dsl.deleteFrom(table("user_profile")).execute()
         redisTemplate.connectionFactory?.connection?.serverCommands()?.flushAll()
     }
 }

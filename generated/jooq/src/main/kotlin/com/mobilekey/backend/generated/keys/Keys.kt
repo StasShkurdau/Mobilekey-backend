@@ -4,9 +4,14 @@
 package com.mobilekey.backend.generated.keys
 
 
-import com.mobilekey.backend.generated.tables.User
-import com.mobilekey.backend.generated.tables.records.UserRecord
+import com.mobilekey.backend.generated.tables.File
+import com.mobilekey.backend.generated.tables.UpdateAvatarRequest
+import com.mobilekey.backend.generated.tables.UserProfile
+import com.mobilekey.backend.generated.tables.records.FileRecord
+import com.mobilekey.backend.generated.tables.records.UpdateAvatarRequestRecord
+import com.mobilekey.backend.generated.tables.records.UserProfileRecord
 
+import org.jooq.ForeignKey
 import org.jooq.UniqueKey
 import org.jooq.impl.DSL
 import org.jooq.impl.Internal
@@ -17,6 +22,14 @@ import org.jooq.impl.Internal
 // UNIQUE and PRIMARY KEY definitions
 // -------------------------------------------------------------------------
 
-val USER_EMAIL_KEY: UniqueKey<UserRecord> = Internal.createUniqueKey(User.USER, DSL.name("user_email_key"), arrayOf(User.USER.EMAIL), true)
-val USER_LOGIN_KEY: UniqueKey<UserRecord> = Internal.createUniqueKey(User.USER, DSL.name("user_login_key"), arrayOf(User.USER.LOGIN), true)
-val USER_PKEY: UniqueKey<UserRecord> = Internal.createUniqueKey(User.USER, DSL.name("user_pkey"), arrayOf(User.USER.ID), true)
+val FILE_PKEY: UniqueKey<FileRecord> = Internal.createUniqueKey(File.FILE, DSL.name("file_pkey"), arrayOf(File.FILE.ID), true)
+val UPDATE_AVATAR_REQUEST_PKEY: UniqueKey<UpdateAvatarRequestRecord> = Internal.createUniqueKey(UpdateAvatarRequest.UPDATE_AVATAR_REQUEST, DSL.name("update_avatar_request_pkey"), arrayOf(UpdateAvatarRequest.UPDATE_AVATAR_REQUEST.ID), true)
+val USER_PROFILE_EMAIL_KEY: UniqueKey<UserProfileRecord> = Internal.createUniqueKey(UserProfile.USER_PROFILE, DSL.name("user_profile_email_key"), arrayOf(UserProfile.USER_PROFILE.EMAIL), true)
+val USER_PROFILE_LOGIN_KEY: UniqueKey<UserProfileRecord> = Internal.createUniqueKey(UserProfile.USER_PROFILE, DSL.name("user_profile_login_key"), arrayOf(UserProfile.USER_PROFILE.LOGIN), true)
+val USER_PROFILE_PKEY: UniqueKey<UserProfileRecord> = Internal.createUniqueKey(UserProfile.USER_PROFILE, DSL.name("user_profile_pkey"), arrayOf(UserProfile.USER_PROFILE.ID), true)
+
+// -------------------------------------------------------------------------
+// FOREIGN KEY definitions
+// -------------------------------------------------------------------------
+
+val USER_PROFILE__USER_PROFILE_AVATAR_ID_FKEY: ForeignKey<UserProfileRecord, FileRecord> = Internal.createForeignKey(UserProfile.USER_PROFILE, DSL.name("user_profile_avatar_id_fkey"), arrayOf(UserProfile.USER_PROFILE.AVATAR_ID), com.mobilekey.backend.generated.keys.FILE_PKEY, arrayOf(File.FILE.ID), true)

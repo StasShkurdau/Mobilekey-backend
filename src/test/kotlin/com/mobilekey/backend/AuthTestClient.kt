@@ -8,9 +8,13 @@ import com.mobilekey.backend.auth.dto.RegisterRequest
 import com.mobilekey.backend.auth.dto.TokenResponse
 import com.mobilekey.backend.common.dto.ErrorResponse
 import com.mobilekey.backend.common.dto.MessageResponse
+import com.mobilekey.backend.file.dto.FileResponse
 import com.mobilekey.backend.user.dto.UpdateUserRequest
 import com.mobilekey.backend.user.dto.UserResponse
+import org.springframework.core.io.ByteArrayResource
 import org.springframework.http.HttpStatusCode
+import org.springframework.http.MediaType
+import org.springframework.http.client.MultipartBodyBuilder
 import org.springframework.test.web.reactive.server.WebTestClient
 
 class AuthTestClient(private val webTestClient: WebTestClient) {
@@ -88,6 +92,66 @@ class AuthTestClient(private val webTestClient: WebTestClient) {
 
     fun updateProfileExpectError(accessToken: String, request: UpdateUserRequest): TestResponse<ErrorResponse> =
         putWithAuth("/api/users/me", request, accessToken)
+
+    // --- Files ---
+
+    fun uploadFile(
+        accessToken: String,
+        fileName: String = "test.png",
+        contentType: MediaType = MediaType.IMAGE_PNG,
+        content: ByteArray = ByteArray(100) { 0x42 },
+    ): TestResponse<FileResponse> {
+        val bodyBuilder = MultipartBodyBuilder()
+        bodyBuilder.part("file", object : ByteArrayResource(content) {
+            override fun getFilename() = fileName
+        }).contentType(contentType)
+
+        val result = webTestClient.post()
+            .uri("/api/files")
+            .headers { it.setBearerAuth(accessToken) }
+            .bodyValue(bodyBuilder.build())
+            .exchange()
+            .returnResult(FileResponse::class.java)
+        val status = result.status
+        val body = result.responseBody.blockFirst()
+        return TestResponse(status, body)
+    }
+
+    fun uploadFileExpectError(
+        accessToken: String,
+        fileName: String = "test.png",
+        contentType: MediaType = MediaType.IMAGE_PNG,
+        content: ByteArray = ByteArray(100) { 0x42 },
+    ): TestResponse<ErrorResponse> {
+        val bodyBuilder = MultipartBodyBuilder()
+        bodyBuilder.part("file", object : ByteArrayResource(content) {
+            override fun getFilename() = fileName
+        }).contentType(contentType)
+
+        val result = webTestClient.post()
+            .uri("/api/files")
+            .headers { it.setBearerAuth(accessToken) }
+            .bodyValue(bodyBuilder.build())
+            .exchange()
+            .returnResult(ErrorResponse::class.java)
+        val status = result.status
+        val body = result.responseBody.blockFirst()
+        return TestResponse(status, body)
+    }
+
+    fun downloadFile(accessToken: String, fileId: String): WebTestClient.ResponseSpec {
+        return webTestClient.get()
+            .uri("/api/files/$fileId")
+            .headers { it.setBearerAuth(accessToken) }
+            .exchange()
+    }
+
+    fun deleteFile(accessToken: String, fileId: String): WebTestClient.ResponseSpec {
+        return webTestClient.delete()
+            .uri("/api/files/$fileId")
+            .headers { it.setBearerAuth(accessToken) }
+            .exchange()
+    }
 
     // --- Helpers ---
 

@@ -32,3 +32,19 @@ app:
     refresh-expiration-ms: 2592000000
   password-reset:
     expiration-ms: 900000
+  minio:
+    endpoint: http://localhost:9000
+    access-key: mobilekey
+    secret-key: mobilekey
+    bucket: mobilekey-test
+  file:
+    max-size: 10485760
+    allowed-types:
+      - image/jpeg
+      - image/png
+      - image/webp
+    temp-expiration-hours: 5
+    deleted-expiration-hours: 24
+  outbox:
+    avatar:
+      enabled: false

@@ -15,4 +15,12 @@ class JooqExecutor(val dsl: DSLContext) {
             dsl.block()
         }
     }
+
+    suspend fun <T> transaction(block: (DSLContext) -> T): T {
+        return withContext(dispatcher) {
+            dsl.transactionResult { config ->
+                block(config.dsl())
+            }
+        }
+    }
 }
