@@ -24,6 +24,10 @@ java {
     targetCompatibility = JavaVersion.VERSION_21
 }
 
+springBoot {
+    mainClass.set("com.mobilekey.backend.ApplicationKt")
+}
+
 repositories {
     mavenCentral()
 }
