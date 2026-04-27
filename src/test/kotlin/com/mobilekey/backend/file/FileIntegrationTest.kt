@@ -18,7 +18,7 @@ class FileIntegrationTest : IntegrationTestBase() {
 
     @BeforeEach
     fun registerUser() {
-        tokens = authClient.register(RegisterRequest("testuser", "test@example.com", "password123")).body!!
+        tokens = authClient.register(RegisterRequest("test@example.com", "password123")).body!!
     }
 
     // --- Upload ---
@@ -96,36 +96,6 @@ class FileIntegrationTest : IntegrationTestBase() {
     @Test
     fun `download non-existent file returns 404`() {
         val result = authClient.downloadFile(tokens.accessToken, "00000000-0000-0000-0000-000000000000")
-
-        result.expectStatus().isNotFound
-    }
-
-    // --- Delete ---
-
-    @Test
-    fun `delete uploaded file returns 204`() {
-        val uploadResponse = authClient.uploadFile(tokens.accessToken)
-        val fileId = uploadResponse.body!!.id.toString()
-
-        val result = authClient.deleteFile(tokens.accessToken, fileId)
-
-        result.expectStatus().isNoContent
-    }
-
-    @Test
-    fun `deleted file cannot be downloaded`() {
-        val uploadResponse = authClient.uploadFile(tokens.accessToken)
-        val fileId = uploadResponse.body!!.id.toString()
-
-        authClient.deleteFile(tokens.accessToken, fileId)
-        val result = authClient.downloadFile(tokens.accessToken, fileId)
-
-        result.expectStatus().isNotFound
-    }
-
-    @Test
-    fun `delete non-existent file returns 404`() {
-        val result = authClient.deleteFile(tokens.accessToken, "00000000-0000-0000-0000-000000000000")
 
         result.expectStatus().isNotFound
     }

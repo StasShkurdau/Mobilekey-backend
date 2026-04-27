@@ -2,7 +2,6 @@ package com.mobilekey.backend.user
 
 import com.mobilekey.backend.IntegrationTestBase
 import com.mobilekey.backend.auth.dto.LoginRequest
-import com.mobilekey.backend.auth.dto.RegisterRequest
 import com.mobilekey.backend.auth.dto.TokenResponse
 import com.mobilekey.backend.user.dto.UpdateUserRequest
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -16,7 +15,7 @@ class UpdateProfileIntegrationTest : IntegrationTestBase() {
 
     @BeforeEach
     fun registerUser() {
-        tokens = authClient.register(RegisterRequest("testuser", "test@example.com", "password123")).body!!
+        tokens = authClient.registerWithLogin("testuser", "test@example.com", "password123")
     }
 
     @Test
@@ -38,7 +37,7 @@ class UpdateProfileIntegrationTest : IntegrationTestBase() {
 
     @Test
     fun `update login returns 400 when login is already taken`() {
-        authClient.register(RegisterRequest("otheruser", "other@example.com", "password123"))
+        authClient.registerWithLogin("otheruser", "other@example.com", "password123")
 
         val response = authClient.updateProfileExpectError(tokens.accessToken, UpdateUserRequest(login = "otheruser", newPassword = null))
 

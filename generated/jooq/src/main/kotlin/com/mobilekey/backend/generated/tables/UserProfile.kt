@@ -85,7 +85,7 @@ open class UserProfile(
     /**
      * The column <code>public.user_profile.login</code>.
      */
-    val LOGIN: TableField<UserProfileRecord, String?> = createField(DSL.name("login"), SQLDataType.VARCHAR(255).nullable(false), this, "")
+    val LOGIN: TableField<UserProfileRecord, String?> = createField(DSL.name("login"), SQLDataType.VARCHAR(255), this, "")
 
     /**
      * The column <code>public.user_profile.email</code>.

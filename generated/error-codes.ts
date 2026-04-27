@@ -2,7 +2,6 @@
 // Run: ./gradlew generateErrorCodes
 
 export const API_ERRORS = {
-  "auth.login_already_taken": "Login already taken",
   "auth.email_already_taken": "Email already taken",
   "auth.invalid_credentials": "Invalid credentials",
   "auth.invalid_refresh_token": "Invalid refresh token",

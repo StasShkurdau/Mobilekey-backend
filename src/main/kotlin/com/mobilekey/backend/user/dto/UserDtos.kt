@@ -5,7 +5,7 @@ import java.util.UUID
 
 data class UserResponse(
     val id: UUID,
-    val login: String,
+    val login: String?,
     val email: String,
     val avatarId: UUID?,
 )

@@ -26,16 +26,13 @@ class AuthService(
 ) {
 
     suspend fun register(request: RegisterRequest): TokenResponse {
-        if (userRepository.existsByLogin(request.login)) {
-            throw ApiException(AuthError.LOGIN_ALREADY_TAKEN)
-        }
         if (userRepository.existsByEmail(request.email)) {
             throw ApiException(AuthError.EMAIL_ALREADY_TAKEN)
         }
 
         val user = User(
             id = uuidGenerator.generate(),
-            login = request.login,
+            login = null,
             email = request.email,
             password = passwordEncoder.encode(request.password),
         )

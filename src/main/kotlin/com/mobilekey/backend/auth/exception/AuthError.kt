@@ -8,7 +8,6 @@ enum class AuthError(
     override val message: String,
     override val httpStatus: HttpStatus = HttpStatus.BAD_REQUEST,
 ) : ApiError {
-    LOGIN_ALREADY_TAKEN("auth.login_already_taken", "Login already taken"),
     EMAIL_ALREADY_TAKEN("auth.email_already_taken", "Email already taken"),
     INVALID_CREDENTIALS("auth.invalid_credentials", "Invalid credentials"),
     INVALID_REFRESH_TOKEN("auth.invalid_refresh_token", "Invalid refresh token", HttpStatus.UNAUTHORIZED),

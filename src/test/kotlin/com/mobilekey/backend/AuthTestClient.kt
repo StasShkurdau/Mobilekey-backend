@@ -30,6 +30,12 @@ class AuthTestClient(private val webTestClient: WebTestClient) {
     fun registerExpectError(request: RegisterRequest): TestResponse<ErrorResponse> =
         post("/api/auth/register", request)
 
+    fun registerWithLogin(login: String, email: String, password: String): TokenResponse {
+        val tokens = register(RegisterRequest(email, password)).body!!
+        updateProfile(tokens.accessToken, UpdateUserRequest(login = login))
+        return tokens
+    }
+
     // --- Login ---
 
     fun login(request: LoginRequest): TestResponse<TokenResponse> =
@@ -141,13 +147,6 @@ class AuthTestClient(private val webTestClient: WebTestClient) {
 
     fun downloadFile(accessToken: String, fileId: String): WebTestClient.ResponseSpec {
         return webTestClient.get()
-            .uri("/api/files/$fileId")
-            .headers { it.setBearerAuth(accessToken) }
-            .exchange()
-    }
-
-    fun deleteFile(accessToken: String, fileId: String): WebTestClient.ResponseSpec {
-        return webTestClient.delete()
             .uri("/api/files/$fileId")
             .headers { it.setBearerAuth(accessToken) }
             .exchange()

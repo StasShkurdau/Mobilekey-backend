@@ -22,9 +22,9 @@ open class UserProfileRecord private constructor() : UpdatableRecordImpl<UserPro
         set(value): Unit = set(0, value)
         get(): UUID = get(0) as UUID
 
-    open var login: String
+    open var login: String?
         set(value): Unit = set(1, value)
-        get(): String = get(1) as String
+        get(): String? = get(1) as String?
 
     open var email: String
         set(value): Unit = set(2, value)
@@ -47,7 +47,7 @@ open class UserProfileRecord private constructor() : UpdatableRecordImpl<UserPro
     /**
      * Create a detached, initialised UserProfileRecord
      */
-    constructor(id: UUID, login: String, email: String, password: String, avatarId: UUID? = null): this() {
+    constructor(id: UUID, login: String? = null, email: String, password: String, avatarId: UUID? = null): this() {
         this.id = id
         this.login = login
         this.email = email

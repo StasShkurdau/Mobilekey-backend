@@ -12,7 +12,7 @@ import org.springframework.http.HttpStatus
 class RefreshTokenIntegrationTest : IntegrationTestBase() {
 
     private fun registerAndGetTokens(): TokenResponse =
-        authClient.register(RegisterRequest("testuser", "test@example.com", "password123")).body!!
+        authClient.register(RegisterRequest("test@example.com", "password123")).body!!
 
     @Test
     fun `refresh returns 200 with new tokens for valid refresh token`() {

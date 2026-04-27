@@ -2,7 +2,6 @@ package com.mobilekey.backend.auth
 
 import com.mobilekey.backend.IntegrationTestBase
 import com.mobilekey.backend.auth.dto.LoginRequest
-import com.mobilekey.backend.auth.dto.RegisterRequest
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
@@ -13,7 +12,7 @@ class LoginIntegrationTest : IntegrationTestBase() {
 
     @BeforeEach
     fun registerUser() {
-        authClient.register(RegisterRequest("testuser", "test@example.com", "password123"))
+        authClient.registerWithLogin("testuser", "test@example.com", "password123")
     }
 
     @Test

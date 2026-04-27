@@ -1,6 +1,5 @@
 {
   "auth": {
-    "auth.login_already_taken": { "message": "Login already taken", "httpStatus": 400 },
     "auth.email_already_taken": { "message": "Email already taken", "httpStatus": 400 },
     "auth.invalid_credentials": { "message": "Invalid credentials", "httpStatus": 400 },
     "auth.invalid_refresh_token": { "message": "Invalid refresh token", "httpStatus": 401 },

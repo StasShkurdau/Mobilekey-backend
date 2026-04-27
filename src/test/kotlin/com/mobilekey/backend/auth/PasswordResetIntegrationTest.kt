@@ -4,7 +4,6 @@ import com.mobilekey.backend.IntegrationTestBase
 import com.mobilekey.backend.auth.dto.LoginRequest
 import com.mobilekey.backend.auth.dto.PasswordResetConfirm
 import com.mobilekey.backend.auth.dto.PasswordResetRequest
-import com.mobilekey.backend.auth.dto.RegisterRequest
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
@@ -15,7 +14,7 @@ class PasswordResetIntegrationTest : IntegrationTestBase() {
 
     @BeforeEach
     fun registerUser() {
-        authClient.register(RegisterRequest("testuser", "test@example.com", "oldpassword123"))
+        authClient.registerWithLogin("testuser", "test@example.com", "oldpassword123")
     }
 
     @Test
